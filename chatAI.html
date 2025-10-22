@@ -104,8 +104,15 @@
         <div class="card border-0 shadow chat-container k-base-section">
             <div class="card-header border-0">Knowledge Base 📚</div>
             <div class="card-body d-flex flex-column gap-1">
-                <div class="alert alert-info border-0 my-0 py-1" role="alert">
+                <div class="input-group gap-2 mb-2">
+                    <input type="text" class="form-control" id="api-key" placeholder="API Key" aria-label="API Key" value="">
+                    <select class="form-select" id="api-model" aria-label="Select model">
+                    </select>
+                </div>
+                <small><b>Information</b></small>
+                <div class="alert alert-info border-0 my-0 py-1 alert-dismissible fade show" role="alert">
                     Please fill in any information, AI will search based on this information given first 😊
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <textarea class="form-control flex-grow-1" id="k-base" placeholder="Type your information here..."
                     style="resize: none;"></textarea>
@@ -131,8 +138,8 @@
                     <button class="btn btn-success" id="sendBtn">Send</button>
                 </div>
             </div>
-        </div>    
-    </div>    
+        </div>
+    </div>
 </div>
 
 
@@ -144,12 +151,19 @@
 <script>
 $(document).ready(function(){
     let chatHistory = []; // Add user input to history
-    const API_KEY = "AIzaSyB8EqMddzoJhANaF1v9msxxpNbcA9uX0sU";
-    // const API_KEY = ""; // <--- put your real key here
+    const API_KEY = "AIzaSyC4-LVUHYTb7-qaanqJm6QF-6iaaRPsW1A";
+    const API_MODEL = [
+        {name: 'gemini-2.5 Flash', value: 'gemini-2.5-flash', attr: ''},
+        {name: 'gemini-2.5 Flash-lite', value: 'gemini-2.5-flash-lite', attr: ''},
+        {name: 'gemini-2.0 Flash', value: 'gemini-2.0-flash', attr: 'selected'},
+        {name: 'gemini-2.0 Flash-lite', value: 'gemini-2.0-flash-lite', attr: ''},
+    ];
 
     async function sendToGemini(prompt = '', kBase = '') {
         try {
-            const whurl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+            let getModel = $('#api-model').val();
+            let getKey = $('#api-key').val();
+            const whurl = `https://generativelanguage.googleapis.com/v1beta/models/${getModel}:generateContent?key=${getKey}`;
             // const whurl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?key=" + API_KEY;
 
             // knowledge base
@@ -187,12 +201,17 @@ $(document).ready(function(){
             );
             const data = await response.json();
             let dataReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "(no reply)";
+            let dataError = data.error?.message || false;
 
             chatHistory.push({
                 role: "model",
                 parts: [{ text: dataReply }]
             });
 
+            // error
+            if (dataError != '') {
+                alert(dataError);
+            }
             return dataReply;
         } catch (e) {
             return "⚠️ Error: " + e.message;
@@ -225,7 +244,15 @@ $(document).ready(function(){
         }
     }
 
+    // init input
+    $('#api-key').val(API_KEY);
+
+    $.each(API_MODEL, function(i, value) {
+        $('#api-model').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
+    });
+
     $("#sendBtn").click(handleSend);
+
     $("#chatInput").keypress(function(e){
         if(e.which === 13){ handleSend(); return false; }
     });
