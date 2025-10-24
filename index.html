@@ -105,9 +105,8 @@
             <div class="card-header border-0">Knowledge Base 📚</div>
             <div class="card-body d-flex flex-column gap-1">
                 <div class="input-group gap-2 mb-2">
-                    <input type="text" class="form-control" id="api-key" placeholder="API Key" aria-label="API Key" value="">
-                    <select class="form-select" id="api-model" aria-label="Select model">
-                    </select>
+                    <select class="form-select" id="api-key" aria-label="Select Group"></select>
+                    <select class="form-select" id="api-model" aria-label="Select Model"></select>
                 </div>
                 <small><b>Information</b></small>
                 <div class="alert alert-info border-0 my-0 py-1 alert-dismissible fade show" role="alert">
@@ -151,12 +150,19 @@
 <script>
 $(document).ready(function(){
     let chatHistory = []; // Add user input to history
-    const API_KEY = "AIzaSyC4-LVUHYTb7-qaanqJm6QF-6iaaRPsW1A";
     const API_MODEL = [
-        {name: 'gemini-2.5 Flash', value: 'gemini-2.5-flash', attr: ''},
+        {name: 'gemini-2.5 Flash', value: 'gemini-2.5-flash', attr: 'selected'},
         {name: 'gemini-2.5 Flash-lite', value: 'gemini-2.5-flash-lite', attr: ''},
-        {name: 'gemini-2.0 Flash', value: 'gemini-2.0-flash', attr: 'selected'},
+        {name: 'gemini-2.0 Flash', value: 'gemini-2.0-flash', attr: ''},
         {name: 'gemini-2.0 Flash-lite', value: 'gemini-2.0-flash-lite', attr: ''},
+    ];
+    const GROUP_KEY = [
+        {name: 'Group 1', value: 'AIzaSyAN0_9voeAv5iAdeEQWJOyqdy8yfrEJR68', attr: 'selected'},
+        {name: 'Group 2', value: 'AIzaSyBH4TR-HZLL0Z1DPjjBLSXhiTagORsP8mA', attr: ''},
+        {name: 'Group 3', value: 'AIzaSyCdUR2O6OIs5PlwZ7iJaj15wr3DVZFOImw', attr: ''},
+        {name: 'Group 4', value: 'AIzaSyCE8A2NU55bPjIiv8I0oMkLvmY4QkEXKkU', attr: ''},
+        {name: 'Group 5', value: 'AIzaSyA4Md7_iWJT6b1jQxtaFSLcVSqK50iuyRg', attr: ''},
+        {name: 'Group 6', value: 'AIzaSyC4-LVUHYTb7-qaanqJm6QF-6iaaRPsW1A', attr: ''},
     ];
 
     async function sendToGemini(prompt = '', kBase = '') {
@@ -164,7 +170,6 @@ $(document).ready(function(){
             let getModel = $('#api-model').val();
             let getKey = $('#api-key').val();
             const whurl = `https://generativelanguage.googleapis.com/v1beta/models/${getModel}:generateContent?key=${getKey}`;
-            // const whurl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?key=" + API_KEY;
 
             // knowledge base
             let addPrompt = '';
@@ -245,7 +250,9 @@ $(document).ready(function(){
     }
 
     // init input
-    $('#api-key').val(API_KEY);
+    $.each(GROUP_KEY, function(i, value) {
+        $('#api-key').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
+    });
 
     $.each(API_MODEL, function(i, value) {
         $('#api-model').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
