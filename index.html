@@ -171,7 +171,7 @@ $(document).ready(function(){
     async function sendToGemini(prompt = '', kBase = '') {
         try {
             let getModel = $('#api-model').val();
-            let getKey = $('#api-group').val();
+            let getKey = $('#api-key').val();
             const whurl = `https://generativelanguage.googleapis.com/v1beta/models/${getModel}:generateContent?key=${getKey}`;
 
             // knowledge base
