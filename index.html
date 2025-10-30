@@ -56,7 +56,7 @@
             color: #ffffff;
         }
         .chat-container {
-            max-width: 500px;
+            max-width: 600px;
             margin: 30px auto;
             background: #fff;
             border-radius: 12px;
@@ -105,8 +105,11 @@
             <div class="card-header border-0">Knowledge Base 📚</div>
             <div class="card-body d-flex flex-column gap-1">
                 <div class="input-group gap-2 mb-2">
-                    <select class="form-select" id="api-key" aria-label="Select Group"></select>
+                    <select class="form-select" id="api-group" aria-label="Select Group"></select>
                     <select class="form-select" id="api-model" aria-label="Select Model"></select>
+                </div>
+                <div class="input-group gap-2 mb-2">
+                    <input type="text" class="form-control" id="api-key" placeholder="api-key" aria-label="api-key" aria-describedby="key">
                 </div>
                 <small><b>Information</b></small>
                 <div class="alert alert-info border-0 my-0 py-1 alert-dismissible fade show" role="alert">
@@ -168,7 +171,7 @@ $(document).ready(function(){
     async function sendToGemini(prompt = '', kBase = '') {
         try {
             let getModel = $('#api-model').val();
-            let getKey = $('#api-key').val();
+            let getKey = $('#api-group').val();
             const whurl = `https://generativelanguage.googleapis.com/v1beta/models/${getModel}:generateContent?key=${getKey}`;
 
             // knowledge base
@@ -251,12 +254,17 @@ $(document).ready(function(){
 
     // init input
     $.each(GROUP_KEY, function(i, value) {
-        $('#api-key').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
+        $('#api-group').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
     });
 
     $.each(API_MODEL, function(i, value) {
         $('#api-model').append(`<option value="${value.value}" ${value.attr}>${value.name}</option>`);
     });
+    //api-key
+    $('#api-group').on('change', function() {
+        let getVal = $(this).val();
+        $('#api-key').val(getVal);
+    }).trigger('change');
 
     $("#sendBtn").click(handleSend);
 
